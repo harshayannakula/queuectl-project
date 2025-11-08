@@ -8,122 +8,137 @@ Demo Video: (https://drive.google.com/file/d/1tzc2JZ5Vu0ljiLcYPP7hy97K8Az4KPMd/v
 
 Objective<br>
 
-    QueueCTL is a CLI-based background job queue system that allows you to:<br>
+    QueueCTL is a CLI-based background job queue system that allows you to:
 
-    Enqueue background jobs.<br>
+    Enqueue background jobs.
 
-    Run one or more worker processes to execute them.<br>
+    Run one or more worker processes to execute them.
 
-    Retry failed jobs automatically using exponential backoff.<br>
+    Retry failed jobs automatically using exponential backoff.
 
-    Move permanently failed jobs to a Dead Letter Queue (DLQ).<br>
+    Move permanently failed jobs to a Dead Letter Queue (DLQ).
 
-    Store jobs persistently in a SQLite database so no data is lost on restart.<br>
+    Store jobs persistently in a SQLite database so no data is lost on restart.
 
-    Manage configuration dynamically (max retries, backoff base, job timeout).<br>
+    Manage configuration dynamically (max retries, backoff base, job timeout).
 
 
 Tech Stack<br>
 
-Language: Python 3.8+<br>
+    Language: Python 3.8+
 
-Database: SQLite (persistent job storage)<br>
+    Database: SQLite (persistent job storage)
 
-CLI Framework: argparse<br>
+    CLI Framework: argparse 
 
-Concurrency: multiprocessing<br>
+    Concurrency: multiprocessing
 
-Testing: pytest<br>
+    Testing: pytest
 
-OS Compatibility: macOS / Linux / Windows (WSL)<br>
+    OS Compatibility: macOS / Linux / Windows (WSL)
 
 
 <br>
 
 #Setup Instructions:
 <br>
-#1. Clone & Setup Virtual Environment<br>
+#1. Clone & Setup Virtual Environment
 <br>
 
-git clone https://github.com/harshayannakula/queuectl-project.git <br>
-cd queuectl-project<br>
-python3 -m venv .venv<br>
-source .venv/bin/activate      # (use .venv\Scripts\activate on Windows)<br>
-pip install -U pip pytest<br>
+    git clone https://github.com/harshayannakula/queuectl-project.git 
+    cd queuectl-project
+    python3 -m venv .venv
+    source .venv/bin/activate      # (use .venv\Scripts\activate on Windows)
+    pip install -U pip pytest
 
 <br>
 #2. Verify Installation<br>
 <br>
-./bin/queuectl --help<br>
+
+    ./bin/queuectl --help
 
 <br>
 #Usage Examples:<br>
 
 #Enqueue a Job<br>
-./bin/queuectl enqueue '{"id":"job1","command":"echo Hello-QueueCTL","max_retries":2}'<br>
+
+    ./bin/queuectl enqueue '{"id":"job1","command":"echo Hello-QueueCTL","max_retries":2}'
 <br>
 #Start Workers<br>
-./bin/queuectl worker start --count 2 &<br>
+
+    ./bin/queuectl worker start --count 2 &
+    
 <br>
 #Check Queue Status<br>
-./bin/queuectl status<br>
+
+    ./bin/queuectl status
 <br>
 #List Jobs<br>
-./bin/queuectl list<br>
-./bin/queuectl list --state completed<br>
+
+    ./bin/queuectl list
+    ./bin/queuectl list --state completed
 <br>
 #Manage DLQ<br>
-./bin/queuectl dlq list<br>
-./bin/queuectl dlq retry job1<br>
+
+    ./bin/queuectl dlq list
+    ./bin/queuectl dlq retry job1
 <br>
+
 #Update Configuration<br>
-./bin/queuectl config set backoff_base 1.5<br>
-./bin/queuectl config set job_timeout 5<br>
-./bin/queuectl config get backoff_base<br>
+
+    ./bin/queuectl config set backoff_base 1.5
+    ./bin/queuectl config set job_timeout 5
+    ./bin/queuectl config get backoff_base
 <br>
 
 #Stop Workers Gracefully<br>
-./bin/queuectl worker stop<br>
+
+    ./bin/queuectl worker stop
 
 <br>
 #Testing Instructions:<br>
 <br>
 #Run Automated Tests<br>
-pytest -q<br>
+
+    pytest -q
 
 #Run Demo Script Automatically<br>
-chmod +x tests/run_demo.sh<br>
-./tests/run_demo.sh<br>
+
+    chmod +x tests/run_demo.sh
+    ./tests/run_demo.sh
 <br>
 #Manual Demo:<br>
 <br>
 #Terminal A (worker logs)<br>
-python3 -m queuectl.cli worker start --count 1<br>
+
+    python3 -m queuectl.cli worker start --count 1
 <br>
 #Terminal B (CLI actions)<br>
-./bin/queuectl enqueue '{"id":"demo1","command":"echo Hello","max_retries":2}'<br>
-./bin/queuectl enqueue '{"id":"demo2","command":"nonexistent-cmd","max_retries":2}'<br>
-sleep 3<br>
-./bin/queuectl status<br>
-./bin/queuectl list<br>
-./bin/queuectl dlq list<br>
-./bin/queuectl dlq retry demo2<br>
-./bin/queuectl worker stop<br>
+
+    ./bin/queuectl enqueue '{"id":"demo1","command":"echo Hello","max_retries":2}'
+    ./bin/queuectl enqueue '{"id":"demo2","command":"nonexistent-cmd","max_retries":2}'
+    sleep 3
+    ./bin/queuectl status
+    ./bin/queuectl list
+    ./bin/queuectl dlq list
+    ./bin/queuectl dlq retry demo2
+    ./bin/queuectl worker stop
 <br>
 
 Sample Job Record (from DB)<br>
-{
-  "id": "demo1",<br>
-  "command": "echo Hello",<br>
-  "state": "completed",<br>
-  "attempts": 1,<br>
-  "max_retries": 3,<br>
-  "stdout": "Hello\n",<br>
-  "stderr": "",<br>
-  "duration": 0.01,<br>
-  "timed_out": 0,<br>
-  "timeout": 10,<br>
-  "created_at": "2025-11-08T16:12:48.385Z",<br>
-  "updated_at": "2025-11-08T16:12:49.012Z"<br>
-}<br>
+
+    {
+      "id": "demo1",
+      "command": "echo Hello",
+      "state": "completed",
+      "attempts": 1,
+      "max_retries": 3,
+      "stdout": "Hello\n",
+      "stderr": "",
+      "duration": 0.01,
+      "timed_out": 0,
+     "timeout": 10,
+      "created_at": "2025-11-08T16:12:48.385Z",
+      "updated_at": "2025-11-08T16:12:49.012Z"
+    }
 
